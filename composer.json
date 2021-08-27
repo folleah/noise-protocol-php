@@ -1,0 +1,13 @@
+{
+    "name": "invariance/noise-protocol",
+    "version": "1.0.0",
+    "require": {
+        "ext-sodium": "*",
+        "ext-openssl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Invariance\\NoiseProtocol\\": "src/"
+        }
+    }
+}
