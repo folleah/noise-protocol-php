@@ -46,6 +46,24 @@ class HandshakePattern
         $this->patterns = $patterns;
     }
 
+    public function initiator(): PreMessagePattern
+    {
+        return $this->initiator;
+    }
+
+    public function responder(): PreMessagePattern
+    {
+        return $this->responder;
+    }
+
+    /**
+     * @return MessagePattern[]
+     */
+    public function messagePatterns(): array
+    {
+        return $this->patterns;
+    }
+
     public function localRequired(bool $initiator): bool
     {
         $preMessage = $initiator
@@ -78,7 +96,7 @@ class HandshakePattern
     }
 
     /**
-     * @throws NoiseProtocolException
+     * @throws NoiseProtocolException - invalid handshake pattern
      */
     public static function instantiate(string $pattern): self
     {

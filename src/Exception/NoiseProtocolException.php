@@ -8,6 +8,6 @@ class NoiseProtocolException extends \Exception
 {
     public function __construct($message = "", ...$params)
     {
-        parent::__construct(sprintf($message, ...$params), 0, null);
+        parent::__construct(sprintf($message, ...$params));
     }
 }

@@ -2,14 +2,17 @@
 
 namespace Invariance\NoiseProtocol\Language;
 
-use Invariance\NoiseProtocol\Exception\NoiseProtocolException;
-
-class PreMessagePattern
+final class PreMessagePattern implements \Iterator
 {
     /**
      * @var string[]
      */
     private $tokens;
+
+    /**
+     * @var int
+     */
+    private $position = 0;
 
     public static function S(): self
     {
@@ -36,16 +39,33 @@ class PreMessagePattern
         $this->tokens = $tokens;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getTokens(): array
-    {
-        return $this->tokens;
-    }
-
     public function hasToken(string $token): bool
     {
         return in_array($token, $this->tokens, true);
+    }
+
+    public function current(): string
+    {
+        return $this->tokens[$this->position];
+    }
+
+    public function next(): void
+    {
+        ++$this->position;
+    }
+
+    public function key(): int
+    {
+        return $this->position;
+    }
+
+    public function valid(): bool
+    {
+        return isset($this->tokens[$this->position]);
+    }
+
+    public function rewind(): void
+    {
+        $this->position = 0;
     }
 }

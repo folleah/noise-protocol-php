@@ -4,33 +4,79 @@ namespace Invariance\NoiseProtocol;
 
 use Invariance\NoiseProtocol\CipherFunction\CipherFunction;
 use Invariance\NoiseProtocol\DhFunction\DhFunction;
-use Invariance\NoiseProtocol\DhFunction\Language\HandshakePattern;
 use Invariance\NoiseProtocol\HashFunction\HashFunction;
+use Invariance\NoiseProtocol\Internal\CipherState;
+use Invariance\NoiseProtocol\Internal\HandshakeState;
+use Invariance\NoiseProtocol\Internal\SymmetricState;
+use Invariance\NoiseProtocol\Language\HandshakePattern;
+use Invariance\NoiseProtocol\Language\PatternModifier;
 
 class Protocol
 {
-    /** @var HandshakePattern */
+    public const MAX_MESSAGE_LENGTH = 65535;
+
+    /**
+     * @var HandshakePattern
+     */
     private $handshakePattern;
 
-    /** @var CipherFunction */
+    /**
+     * @var CipherFunction
+     */
     private $cipherFunction;
 
-    /** @var HashFunction */
+    /**
+     * @var HashFunction
+     */
     private $hashFunction;
 
-    /** @var DhFunction */
+    /**
+     * @var DhFunction
+     */
     private $dhFunction;
 
+    /**
+     * @var string
+     */
+    private $protocolName;
+
+    /**
+     * @var CipherState
+     */
+    private $cipherState;
+
+    /**
+     * @var SymmetricState
+     */
+    private $symmetricState;
+
     public function __construct(
-        HandshakePattern $handshakePattern,
+        string $handshakePattern,
         CipherFunction $cipherFunction,
         HashFunction $hashFunction,
-        DhFunction $dhFunction
+        DhFunction $dhFunction,
+        int $pskModifiers = PatternModifier::NONE
     ) {
-        $this->handshakePattern = $handshakePattern;
+        $this->protocolName = $this->generateProtocolName(
+            $handshakePattern,
+            (string)$dhFunction,
+            (string)$cipherFunction,
+            (string)$hashFunction
+        );
+        $this->handshakePattern = HandshakePattern::instantiate($handshakePattern);
         $this->cipherFunction = $cipherFunction;
         $this->hashFunction = $hashFunction;
         $this->dhFunction = $dhFunction;
+        $this->cipherState = new CipherState($this);
+        $this->symmetricState = new SymmetricState($this, $this->cipherState);
+    }
+
+    public function create(string $s): HandshakeState
+    {
+        return new HandshakeState(
+            $this,
+            $this->symmetricState
+        );
     }
 
     public function getCipherFunction(): CipherFunction
@@ -58,14 +104,13 @@ class Protocol
 
     }
 
-    private function getProtocolName(): string
+    public function getName(): string
     {
-        // Noise_${handshakePattern}_${dh.ALG}_${cipher.ALG}_${hash.ALG}`
-        return sprintf('Noise_%s_%s_%s_%s', $this->handshakePattern->getName(), );
+        return $this->protocolName;
     }
 
-    private function toCharCode(string $str): int
+    private function generateProtocolName(string $handshakePattern, string $dhFunction, string $cipherFunction, string $hashFunction): string
     {
-        return ord($str);
+        return sprintf('Noise_%s_%s_%s_%s', $handshakePattern, $dhFunction, $cipherFunction, $hashFunction);
     }
 }
