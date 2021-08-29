@@ -3,7 +3,7 @@
 namespace Invariance\NoiseProtocol\Internal;
 
 use Invariance\NoiseProtocol\Exception\DecryptFailureException;
-use Invariance\NoiseProtocol\Protocol;
+use Invariance\NoiseProtocol\ProtocolSuite;
 
 class CipherState
 {
@@ -18,13 +18,13 @@ class CipherState
     private $k;
 
     /**
-     * @var Protocol
+     * @var ProtocolSuite
      */
-    private $protocol;
+    private $suite;
 
-    public function __construct(Protocol $protocol)
+    public function __construct(ProtocolSuite $suite)
     {
-        $this->protocol = $protocol;
+        $this->suite = $suite;
     }
 
     public function initializeKey(?string $key): void
@@ -46,7 +46,7 @@ class CipherState
     public function encryptWithAd(string $ad, string $plainText): string
     {
         if ($this->hasKey()) {
-            return $this->protocol->getCipherFunction()->encrypt($this->k, (string)$this->n++, $ad, $plainText);
+            return $this->suite->getCipherFunction()->encrypt($this->k, $this->n++, $ad, $plainText);
         }
 
         return $plainText;
@@ -56,7 +56,7 @@ class CipherState
     {
         if ($this->hasKey()) {
             try {
-                return $this->protocol->getCipherFunction()->decrypt($this->k, (string)$this->n++, $ad, $cipherText);
+                return $this->suite->getCipherFunction()->decrypt($this->k, $this->n++, $ad, $cipherText);
             } catch (DecryptFailureException $e) {
                 $this->n--;
                 throw $e;
@@ -68,6 +68,6 @@ class CipherState
 
     public function reKey(): void
     {
-        $this->k = $this->protocol->getCipherFunction()->reKey();
+        $this->k = $this->suite->getCipherFunction()->reKey();
     }
 }

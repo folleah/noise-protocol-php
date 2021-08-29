@@ -9,7 +9,7 @@ class ChaChaPoly implements CipherFunction
     /**
      * @inheritDoc
      */
-    public function encrypt(string $k, string $n, string $ad, string $plainText): string
+    public function encrypt(string $k, int $n, string $ad, string $plainText): string
     {
         return sodium_crypto_aead_chacha20poly1305_encrypt(
             $plainText,
@@ -22,7 +22,7 @@ class ChaChaPoly implements CipherFunction
     /**
      * @inheritDoc
      */
-    public function decrypt(string $k, string $n, string $ad, string $cipherText): string
+    public function decrypt(string $k, int $n, string $ad, string $cipherText): string
     {
         $res = sodium_crypto_aead_chacha20poly1305_decrypt(
             $cipherText,

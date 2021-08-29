@@ -2,8 +2,12 @@
 
 namespace Invariance\NoiseProtocol;
 
+use Invariance\NoiseProtocol\DhFunction\Curve25519;
+
 class KeyPair
 {
+    private static $dh;
+
     /** @var string */
     private $secret;
 
@@ -14,6 +18,15 @@ class KeyPair
     {
         $this->secret = $secret;
         $this->public = $public;
+    }
+
+    public static function generate(): self
+    {
+        if (self::$dh === null) {
+            self::$dh = new Curve25519();
+        }
+
+        return self::$dh->generateKeyPair();
     }
 
     public function getSecretKey(): string

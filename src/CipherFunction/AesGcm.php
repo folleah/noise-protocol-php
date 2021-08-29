@@ -2,6 +2,7 @@
 
 namespace Invariance\NoiseProtocol\CipherFunction;
 
+use Invariance\NoiseProtocol\ByteHelper;
 use Invariance\NoiseProtocol\Exception\DecryptFailureException;
 use Invariance\NoiseProtocol\Exception\NoiseProtocolException;
 
@@ -17,12 +18,12 @@ class AesGcm implements CipherFunction
     /**
      * @inheritDoc
      */
-    public function encrypt(string $k, string $n, string $ad, string $plainText): string
+    public function encrypt(string $k, int $n, string $ad, string $plainText): string
     {
         return sodium_crypto_aead_aes256gcm_encrypt(
             $plainText,
             $ad,
-            $n,
+            ByteHelper::intAlloc($n, SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES),
             $k
         );
     }
@@ -30,12 +31,12 @@ class AesGcm implements CipherFunction
     /**
      * @inheritDoc
      */
-    public function decrypt(string $k, string $n, string $ad, string $cipherText): string
+    public function decrypt(string $k, int $n, string $ad, string $cipherText): string
     {
         $res = sodium_crypto_aead_aes256gcm_decrypt(
             $cipherText,
             $ad,
-            $n,
+            ByteHelper::intAlloc($n, SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES),
             $k
         );
 

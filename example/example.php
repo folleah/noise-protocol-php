@@ -2,23 +2,32 @@
 
 require '../vendor/autoload.php';
 
-use Invariance\NoiseProtocol\CipherFunction\ChaChaPoly;
+use Invariance\NoiseProtocol\CipherFunction\AesGcm;
 use Invariance\NoiseProtocol\DhFunction\Curve25519;
-use Invariance\NoiseProtocol\DhFunction\Language\HandshakePattern;
-use Invariance\NoiseProtocol\DhFunction\Language\PatternModifier;
-use Invariance\NoiseProtocol\HashFunction\Sha512;
-use Invariance\NoiseProtocol\Protocol;
+use Invariance\NoiseProtocol\HashFunction\Sha256;
+use Invariance\NoiseProtocol\Internal\HandshakeState;
+use Invariance\NoiseProtocol\KeyPair;
+use Invariance\NoiseProtocol\Language\HandshakePattern;
+use Invariance\NoiseProtocol\ProtocolConfig;
+use Invariance\NoiseProtocol\ProtocolSuite;
 
-$protocol = new Protocol(
-    HandshakePattern::N(),
-    new ChaChaPoly(),
-    new Sha512(),
+$suite = new ProtocolSuite(
+    new AesGcm(),
+    new Sha256(),
     new Curve25519()
 );
 
-$initiator = new HandshakeState(
-    $protocol,
-    true,
-    'rs',
-    PatternModifier::NONE
-);
+$clientStatic = KeyPair::generate();
+$serverStatic = KeyPair::generate();
+
+$client = new HandshakeState(new ProtocolConfig(
+    suite: $suite,
+    handshakePattern: HandshakePattern::N,
+    initiator: true,
+    s: $clientStatic,
+    rs: $serverStatic->getPublicKey()
+));
+
+$client->writeMessage('', function ($messageBuffer, $c1, $c2) {
+    echo $messageBuffer;
+});

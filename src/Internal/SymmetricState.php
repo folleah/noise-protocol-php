@@ -3,7 +3,7 @@
 namespace Invariance\NoiseProtocol\Internal;
 
 use Invariance\NoiseProtocol\HkdfWrapper;
-use Invariance\NoiseProtocol\Protocol;
+use Invariance\NoiseProtocol\ProtocolSuite;
 
 class SymmetricState
 {
@@ -23,26 +23,23 @@ class SymmetricState
     private $cipherState;
 
     /**
-     * @var Protocol
+     * @var ProtocolSuite
      */
-    private $protocol;
+    private $suite;
 
-    public function __construct(Protocol $protocol, CipherState $cipherState)
+    public function __construct(ProtocolSuite $suite, string $protocolName)
     {
-        $this->cipherState = $cipherState;
-        $this->protocol = $protocol;
-    }
+        $this->cipherState = new CipherState($suite);
+        $this->suite = $suite;
 
-    public function initializeSymmetric(string $protocolName): void
-    {
-        if (strlen($protocolName) <= $this->protocol->getHashFunction()->getHashLen()) {
-            while (strlen($protocolName) < $this->protocol->getHashFunction()->getHashLen()) {
+        if (strlen($protocolName) <= $this->suite->getHashFunction()->getHashLen()) {
+            while (strlen($protocolName) < $this->suite->getHashFunction()->getHashLen()) {
                 $protocolName .= "\0";
             }
 
             $this->h = $protocolName;
         } else {
-            $this->h = $this->protocol->getHashFunction()->hash($protocolName);
+            $this->h = $this->suite->getHashFunction()->hash($protocolName);
         }
 
         $this->ck = $this->h;
@@ -56,11 +53,11 @@ class SymmetricState
             $this->ck,
             $inputKeyMaterial,
             2,
-            $this->protocol->getHashFunction()->getHashLen(),
-            $this->protocol->getDhFunction()->getLen()
+            $this->suite->getHashFunction()->getHashLen(),
+            $this->suite->getDhFunction()->getLen()
         );
 
-        if ($this->protocol->getHashFunction()->getHashLen() === 64) {
+        if ($this->suite->getHashFunction()->getHashLen() === 64) {
             $tempK = substr($tempK, 0, 32);
         }
 
@@ -69,7 +66,7 @@ class SymmetricState
 
     public function mixHash(string $data): void
     {
-        $this->h = $this->protocol->getHashFunction()->hash($this->h . $data);
+        $this->h = $this->suite->getHashFunction()->hash($this->h . $data);
     }
 
     public function mixKeyAndHash(string $inputMaterialKey): void
@@ -78,13 +75,13 @@ class SymmetricState
             $this->ck,
             $inputMaterialKey,
             3,
-            $this->protocol->getHashFunction()->getHashLen(),
-            $this->protocol->getDhFunction()->getLen()
+            $this->suite->getHashFunction()->getHashLen(),
+            $this->suite->getDhFunction()->getLen()
         );
 
         $this->mixHash($tempH);
 
-        if ($this->protocol->getHashFunction()->getHashLen() === 64) {
+        if ($this->suite->getHashFunction()->getHashLen() === 64) {
             $tempK = substr($tempK, 0, 32);
         }
 
@@ -121,20 +118,25 @@ class SymmetricState
             $this->ck,
             '',
             2,
-            $this->protocol->getHashFunction()->getHashLen(),
-            $this->protocol->getDhFunction()->getLen()
+            $this->suite->getHashFunction()->getHashLen(),
+            $this->suite->getDhFunction()->getLen()
         );
 
-        if ($this->protocol->getHashFunction()->getHashLen() === 64) {
+        if ($this->suite->getHashFunction()->getHashLen() === 64) {
             $tempK1 = substr($tempK1, 0, 32);
             $tempK2 = substr($tempK2, 0, 32);
         }
 
-        $c1 = new CipherState($this->protocol);
+        $c1 = new CipherState($this->suite);
         $c1->initializeKey($tempK1);
-        $c2 = new CipherState($this->protocol);
+        $c2 = new CipherState($this->suite);
         $c2->initializeKey($tempK2);
 
         return [$c1, $c2];
+    }
+
+    public function getCipherState(): CipherState
+    {
+        return $this->cipherState;
     }
 }

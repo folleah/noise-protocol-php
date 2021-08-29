@@ -8,23 +8,23 @@ interface CipherFunction
 {
     /**
      * @param string $k - cipher key
-     * @param string $n - nonce
+     * @param int $n - nonce
      * @param string $ad - additional data
      * @param string $plainText - plain text
      * @return string - cipher text
      */
-    public function encrypt(string $k, string $n, string $ad, string $plainText): string;
+    public function encrypt(string $k, int $n, string $ad, string $plainText): string;
 
     /**
      * @param string $k - cipher key
-     * @param string $n - nonce
+     * @param int $n - nonce
      * @param string $ad - additional data
      * @param string $cipherText - cipher text
      * @return string - plain text
      *
      * @throws DecryptFailureException
      */
-    public function decrypt(string $k, string $n, string $ad, string $cipherText): string;
+    public function decrypt(string $k, int $n, string $ad, string $cipherText): string;
 
     /**
      * @return string - pseudo-random bytes cipher key
