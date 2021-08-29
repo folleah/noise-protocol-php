@@ -4,7 +4,7 @@ namespace Invariance\NoiseProtocol;
 
 use Invariance\NoiseProtocol\Internal\CipherState;
 
-class ProtocolResponse
+final class ProtocolResponse
 {
     private string $data;
     private CipherState|null $cs1;

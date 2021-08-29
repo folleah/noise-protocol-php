@@ -2,7 +2,7 @@
 
 namespace Invariance\NoiseProtocol;
 
-class ByteHelper
+final class ByteHelper
 {
     public static function intAlloc(int $value, int $length): string
     {

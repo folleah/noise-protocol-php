@@ -3,16 +3,15 @@
 namespace Invariance\NoiseProtocol;
 
 use Invariance\NoiseProtocol\DhFunction\Curve25519;
+use Invariance\NoiseProtocol\DhFunction\DhFunction;
 
-class KeyPair
+final class KeyPair
 {
-    private static $dh;
+    private static DhFunction|null $dh = null;
 
-    /** @var string */
-    private $secret;
+    private string $secret;
 
-    /** @var string */
-    private $public;
+    private string $public;
 
     public function __construct(string $secret, string $public)
     {

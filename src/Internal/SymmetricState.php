@@ -2,10 +2,11 @@
 
 namespace Invariance\NoiseProtocol\Internal;
 
+use Invariance\NoiseProtocol\Exception\NoiseProtocolException;
 use Invariance\NoiseProtocol\HkdfWrapper;
 use Invariance\NoiseProtocol\ProtocolSuite;
 
-class SymmetricState
+final class SymmetricState
 {
     /**
      * A chaining key of HASHLEN bytes
@@ -118,6 +119,7 @@ class SymmetricState
 
     /**
      * @return CipherState[]
+     * @throws NoiseProtocolException
      */
     public function split(): array
     {

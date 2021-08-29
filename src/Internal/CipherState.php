@@ -5,22 +5,13 @@ namespace Invariance\NoiseProtocol\Internal;
 use Invariance\NoiseProtocol\Exception\DecryptFailureException;
 use Invariance\NoiseProtocol\ProtocolSuite;
 
-class CipherState
+final class CipherState
 {
-    /**
-     * @var int
-     */
-    private $n;
+    private int $n;
 
-    /**
-     * @var string|null
-     */
-    private $k;
+    private string|null $k;
 
-    /**
-     * @var ProtocolSuite
-     */
-    private $suite;
+    private ProtocolSuite $suite;
 
     public function __construct(ProtocolSuite $suite)
     {

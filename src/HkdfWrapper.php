@@ -16,21 +16,18 @@ final class HkdfWrapper
         callable $output
     ): void {
         $ckLength = strlen($ck);
-        assert(
-            $ckLength === $hashFunc->getHashLen(),
-            new NoiseProtocolException('Invalid ck length: %s.', $ckLength)
-        );
+        if ($ckLength !== $hashFunc->getHashLen()) {
+            throw new NoiseProtocolException('Invalid ck length: %s.', $ckLength);
+        }
 
         $inputKeyMaterialLength = strlen($inputKeyMaterial);
-        assert(
-            $inputKeyMaterialLength === 0 || $inputKeyMaterialLength === 32 || $inputKeyMaterialLength === $dhLen,
-            new NoiseProtocolException('Invalid input_key_material length: %s.', $inputKeyMaterialLength)
-        );
+        if ($inputKeyMaterialLength !== 0 && $inputKeyMaterialLength !== 32 && $inputKeyMaterialLength !== $dhLen) {
+            throw new NoiseProtocolException('Invalid input_key_material length: %s.', $inputKeyMaterialLength);
+        }
 
-        assert($numOutputs === 2 || $numOutputs === 3, new NoiseProtocolException('Invalid num outputs: %s', $numOutputs));
-
-//        var_dump(pack('s*', 0x01));die;
-//        var_dump(hash_hmac('sha256', 'test', 'test', true));die;
+        if ($numOutputs !== 2 && $numOutputs !== 3) {
+            throw new NoiseProtocolException('Invalid num outputs: %s', $numOutputs);
+        }
 
         $tempKey = hash_hmac((string)$hashFunc, $inputKeyMaterial, $ck, true);
         $out1 = hash_hmac((string)$hashFunc, pack('s', 0x01), $tempKey, true);
@@ -43,7 +40,5 @@ final class HkdfWrapper
 
         $out3 = hash_hmac((string)$hashFunc, $out2 . pack('s', 0x03), $tempKey, true);
         $output($out1, $out2, $out3);
-
-//        return hash_hkdf('sha256', $ck, $hashLen * $numOutputs, '', $inputKeyMaterial);
     }
 }

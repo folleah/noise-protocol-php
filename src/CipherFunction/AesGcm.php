@@ -6,7 +6,7 @@ use Invariance\NoiseProtocol\ByteHelper;
 use Invariance\NoiseProtocol\Exception\DecryptFailureException;
 use Invariance\NoiseProtocol\Exception\NoiseProtocolException;
 
-class AesGcm implements CipherFunction
+final class AesGcm implements CipherFunction
 {
     public function __construct()
     {
@@ -20,8 +20,9 @@ class AesGcm implements CipherFunction
      */
     public function encrypt(string $k, int $n, string $ad, string $plainText): string
     {
-        if (strlen($k) !== SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES) {
-            throw new NoiseProtocolException('Key length must be %s bytes, %s bytes provided.', SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES, strlen($k));
+        $keyLength = strlen($k);
+        if ($keyLength !== SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES) {
+            throw new NoiseProtocolException('Key length must be %s bytes, %s bytes provided.', SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES, $keyLength);
         }
 
         return sodium_crypto_aead_aes256gcm_encrypt(
@@ -37,6 +38,11 @@ class AesGcm implements CipherFunction
      */
     public function decrypt(string $k, int $n, string $ad, string $cipherText): string
     {
+        $keyLength = strlen($k);
+        if ($keyLength !== SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES) {
+            throw new NoiseProtocolException('Key length must be %s bytes, %s bytes provided.', SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES, $keyLength);
+        }
+
         $res = sodium_crypto_aead_aes256gcm_decrypt(
             $cipherText,
             $ad,

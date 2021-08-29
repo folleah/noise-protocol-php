@@ -11,47 +11,26 @@ use Invariance\NoiseProtocol\ProtocolConfig;
 use Invariance\NoiseProtocol\ProtocolResponse;
 use Invariance\NoiseProtocol\ProtocolSuite;
 
-class HandshakeState
+final class HandshakeState
 {
-    /**
-     * @var KeyPair
-     */
-    private $s;
+    private KeyPair|null $s;
 
-    /**
-     * @var KeyPair
-     */
-    private $e;
+    private KeyPair|null $e;
 
-    /**
-     * @var string
-     */
-    private $rs;
+    private string|null $rs;
 
-    /**
-     * @var string
-     */
-    private $re;
+    private string|null $re;
 
-    /**
-     * @var bool
-     */
-    private $initiator;
+    private bool $initiator;
 
     /**
      * @var \SplQueue|MessagePattern[]
      */
-    private $messagePatterns;
+    private array|\SplQueue $messagePatterns;
 
-    /**
-     * @var ProtocolSuite
-     */
-    private $suite;
+    private ProtocolSuite $suite;
 
-    /**
-     * @var SymmetricState
-     */
-    private $symmetricState;
+    private SymmetricState $symmetricState;
 
     /**
      * @throws NoiseProtocolException

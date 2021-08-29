@@ -1,22 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Invariance\NoiseProtocol\HashFunction;
 
-class Sha256 implements HashFunction
+use JetBrains\PhpStorm\Pure;
+
+final class Sha256 implements HashFunction
 {
     public function getHashLen(): int
     {
         return 32;
     }
 
-    public function getBlockLen(): int
+    #[Pure] public function hash(string $input): string
     {
-        return 64;
-    }
-
-    public function hash(string $input): string
-    {
-        return hash('sha256', $input);
+        return hash($this->__toString(), $input);
     }
 
     public function __toString(): string

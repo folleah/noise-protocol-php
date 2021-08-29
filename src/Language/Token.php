@@ -2,7 +2,7 @@
 
 namespace Invariance\NoiseProtocol\Language;
 
-class Token
+final class Token
 {
     public const E = 'e';
     public const S = 's';

@@ -7,12 +7,9 @@ final class MessagePattern implements \Iterator
     /**
      * @var string[]
      */
-    private $tokens;
+    private array $tokens;
 
-    /**
-     * @var int
-     */
-    private $position = 0;
+    private int $position = 0;
 
     public function __construct(...$tokens)
     {

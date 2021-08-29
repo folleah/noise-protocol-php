@@ -3,55 +3,29 @@
 namespace Invariance\NoiseProtocol;
 
 use Invariance\NoiseProtocol\Language\PatternModifier;
+use JetBrains\PhpStorm\Pure;
 
 final class ProtocolConfig
 {
     public const MAX_MESSAGE_LENGTH = 65535;
 
-    /**
-     * @var ProtocolSuite
-     */
-    private $suite;
+    private ProtocolSuite $suite;
 
-    /**
-     * @var string
-     */
-    private $handshakePattern;
+    private string $handshakePattern;
 
-    /**
-     * @var bool
-     */
-    private $initiator;
+    private bool $initiator;
 
-    /**
-     * @var string
-     */
-    private $prologue;
+    private string $prologue;
 
-    /**
-     * @var KeyPair|null
-     */
-    private $s;
+    private KeyPair|null $s;
 
-    /**
-     * @var KeyPair|null
-     */
-    private $e;
+    private KeyPair|null $e;
 
-    /**
-     * @var string|null
-     */
-    private $rs;
+    private string|null $rs;
 
-    /**
-     * @var string|null
-     */
-    private $re;
+    private string|null $re;
 
-    /**
-     * @var int
-     */
-    private $psks;
+    private int $psks;
 
     public function __construct(
         ProtocolSuite  $suite,
@@ -120,7 +94,7 @@ final class ProtocolConfig
         return $this->psks;
     }
 
-    public function getProtocolName(): string
+    #[Pure] public function getProtocolName(): string
     {
         return sprintf(
             'Noise_%s_%s_%s_%s',

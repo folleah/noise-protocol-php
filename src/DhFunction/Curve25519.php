@@ -4,7 +4,7 @@ namespace Invariance\NoiseProtocol\DhFunction;
 
 use Invariance\NoiseProtocol\KeyPair;
 
-class Curve25519 implements DhFunction
+final class Curve25519 implements DhFunction
 {
     public function getLen(): int
     {

@@ -4,7 +4,7 @@ namespace Invariance\NoiseProtocol\Language;
 
 use Invariance\NoiseProtocol\Exception\NoiseProtocolException;
 
-class HandshakePattern
+final class HandshakePattern
 {
     // patterns
     public const N = 'N';
@@ -27,14 +27,12 @@ class HandshakePattern
     public const IK = 'IK';
     public const IX = 'IX';
 
-    /** @var PreMessagePattern */
-    private $initiator;
+    private PreMessagePattern $initiator;
 
-    /** @var PreMessagePattern */
-    private $responder;
+    private PreMessagePattern $responder;
 
     /** @var MessagePattern[] */
-    private $patterns;
+    private array $patterns;
 
     /**
      * @param MessagePattern ...$patterns
@@ -64,36 +62,36 @@ class HandshakePattern
         return $this->patterns;
     }
 
-    public function localRequired(bool $initiator): bool
-    {
-        $preMessage = $initiator
-            ? $this->initiator
-            : $this->responder;
-
-        if ($preMessage->hasToken(Token::S)) {
-            return true;
-        }
-
-        $turnToWrite = $initiator;
-        foreach ($this->patterns as $pattern) {
-            if ($turnToWrite && $pattern->hasToken(Token::S)) {
-                return true;
-            }
-
-            $turnToWrite = !$turnToWrite;
-        }
-
-        return false;
-    }
-
-    public function remoteRequired(bool $initiator): bool
-    {
-        $preMessage = $initiator
-            ? $this->initiator
-            : $this->responder;
-
-        return $preMessage->hasToken(Token::S);
-    }
+//    public function localRequired(bool $initiator): bool
+//    {
+//        $preMessage = $initiator
+//            ? $this->initiator
+//            : $this->responder;
+//
+//        if ($preMessage->hasToken(Token::S)) {
+//            return true;
+//        }
+//
+//        $turnToWrite = $initiator;
+//        foreach ($this->patterns as $pattern) {
+//            if ($turnToWrite && $pattern->hasToken(Token::S)) {
+//                return true;
+//            }
+//
+//            $turnToWrite = !$turnToWrite;
+//        }
+//
+//        return false;
+//    }
+//
+//    public function remoteRequired(bool $initiator): bool
+//    {
+//        $preMessage = $initiator
+//            ? $this->initiator
+//            : $this->responder;
+//
+//        return $preMessage->hasToken(Token::S);
+//    }
 
     /**
      * @throws NoiseProtocolException - invalid handshake pattern

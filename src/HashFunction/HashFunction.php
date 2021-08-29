@@ -6,8 +6,6 @@ interface HashFunction
 {
     public function getHashLen(): int;
 
-    public function getBlockLen(): int;
-
     public function hash(string $input): string;
 
     /**
