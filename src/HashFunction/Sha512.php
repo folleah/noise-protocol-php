@@ -2,8 +2,6 @@
 
 namespace Invariance\NoiseProtocol\HashFunction;
 
-use JetBrains\PhpStorm\Pure;
-
 final class Sha512 implements HashFunction
 {
     public function getHashLen(): int
@@ -11,7 +9,7 @@ final class Sha512 implements HashFunction
         return 64;
     }
 
-    #[Pure] public function hash(string $input): string
+    public function hash(string $input): string
     {
         return hash($this->__toString(), $input);
     }

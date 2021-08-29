@@ -3,7 +3,6 @@
 namespace Invariance\NoiseProtocol;
 
 use Invariance\NoiseProtocol\Language\PatternModifier;
-use JetBrains\PhpStorm\Pure;
 
 final class ProtocolConfig
 {
@@ -94,7 +93,7 @@ final class ProtocolConfig
         return $this->psks;
     }
 
-    #[Pure] public function getProtocolName(): string
+    public function getProtocolName(): string
     {
         return sprintf(
             'Noise_%s_%s_%s_%s',
