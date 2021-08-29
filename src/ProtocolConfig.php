@@ -27,16 +27,17 @@ final class ProtocolConfig
     private int $psks;
 
     public function __construct(
-        ProtocolSuite  $suite,
-        string         $handshakePattern,
-        bool           $initiator,
-        ?KeyPair       $s = null,
-        ?KeyPair       $e = null,
-        ?string        $rs = null,
-        ?string        $re = null,
-        string         $prologue = '',
-        int            $psks = PatternModifier::NONE
-    ) {
+        ProtocolSuite $suite,
+        string        $handshakePattern,
+        bool          $initiator,
+        ?KeyPair      $s = null,
+        ?KeyPair      $e = null,
+        ?string       $rs = null,
+        ?string       $re = null,
+        string        $prologue = '',
+        int           $psks = PatternModifier::NONE
+    )
+    {
         $this->suite = $suite;
         $this->handshakePattern = $handshakePattern;
         $this->initiator = $initiator;

@@ -6,11 +6,6 @@ use Invariance\NoiseProtocol\KeyPair;
 
 final class Curve25519 implements DhFunction
 {
-    public function getLen(): int
-    {
-        return SODIUM_CRYPTO_SCALARMULT_SCALARBYTES;
-    }
-
     public function generateKeyPair(): KeyPair
     {
         $privateKey = random_bytes($this->getLen());
@@ -20,6 +15,11 @@ final class Curve25519 implements DhFunction
             $privateKey,
             $publicKey
         );
+    }
+
+    public function getLen(): int
+    {
+        return SODIUM_CRYPTO_SCALARMULT_SCALARBYTES;
     }
 
     public function dh(KeyPair $l_KeyPair, string $r_PublicKey): string

@@ -8,13 +8,14 @@ use Invariance\NoiseProtocol\HashFunction\HashFunction;
 final class HkdfWrapper
 {
     public static function generate(
-        string $ck,
-        string $inputKeyMaterial,
-        int $numOutputs,
+        string       $ck,
+        string       $inputKeyMaterial,
+        int          $numOutputs,
         HashFunction $hashFunc,
-        int $dhLen,
-        callable $output
-    ): void {
+        int          $dhLen,
+        callable     $output
+    ): void
+    {
         $ckLength = strlen($ck);
         if ($ckLength !== $hashFunc->getHashLen()) {
             throw new NoiseProtocolException('Invalid ck length: %s.', $ckLength);

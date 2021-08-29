@@ -5,7 +5,6 @@ require '../vendor/autoload.php';
 use Invariance\NoiseProtocol\CipherFunction\AesGcm;
 use Invariance\NoiseProtocol\DhFunction\Curve25519;
 use Invariance\NoiseProtocol\HashFunction\Sha256;
-use Invariance\NoiseProtocol\Internal\CipherState;
 use Invariance\NoiseProtocol\Internal\HandshakeState;
 use Invariance\NoiseProtocol\KeyPair;
 use Invariance\NoiseProtocol\Language\HandshakePattern;

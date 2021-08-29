@@ -64,11 +64,6 @@ final class SymmetricState
         $this->cipherState->initializeKey($tempK);
     }
 
-    public function mixHash(string $data): void
-    {
-        $this->h = $this->suite->getHashFunction()->hash($this->h . $data);
-    }
-
     public function mixKeyAndHash(string $inputMaterialKey): void
     {
         $tempH = null;
@@ -94,6 +89,11 @@ final class SymmetricState
         }
 
         $this->cipherState->initializeKey($tempK);
+    }
+
+    public function mixHash(string $data): void
+    {
+        $this->h = $this->suite->getHashFunction()->hash($this->h . $data);
     }
 
     public function getHandshakeHash(): string

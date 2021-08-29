@@ -44,55 +44,6 @@ final class HandshakePattern
         $this->patterns = $patterns;
     }
 
-    public function initiator(): PreMessagePattern
-    {
-        return $this->initiator;
-    }
-
-    public function responder(): PreMessagePattern
-    {
-        return $this->responder;
-    }
-
-    /**
-     * @return MessagePattern[]
-     */
-    public function messagePatterns(): array
-    {
-        return $this->patterns;
-    }
-
-//    public function localRequired(bool $initiator): bool
-//    {
-//        $preMessage = $initiator
-//            ? $this->initiator
-//            : $this->responder;
-//
-//        if ($preMessage->hasToken(Token::S)) {
-//            return true;
-//        }
-//
-//        $turnToWrite = $initiator;
-//        foreach ($this->patterns as $pattern) {
-//            if ($turnToWrite && $pattern->hasToken(Token::S)) {
-//                return true;
-//            }
-//
-//            $turnToWrite = !$turnToWrite;
-//        }
-//
-//        return false;
-//    }
-//
-//    public function remoteRequired(bool $initiator): bool
-//    {
-//        $preMessage = $initiator
-//            ? $this->initiator
-//            : $this->responder;
-//
-//        return $preMessage->hasToken(Token::S);
-//    }
-
     /**
      * @throws NoiseProtocolException - invalid handshake pattern
      */
@@ -191,5 +142,54 @@ final class HandshakePattern
             ),
             default => throw new NoiseProtocolException('Invalid pattern name: %s.', $pattern),
         };
+    }
+
+    public function initiator(): PreMessagePattern
+    {
+        return $this->initiator;
+    }
+
+    public function responder(): PreMessagePattern
+    {
+        return $this->responder;
+    }
+
+//    public function localRequired(bool $initiator): bool
+//    {
+//        $preMessage = $initiator
+//            ? $this->initiator
+//            : $this->responder;
+//
+//        if ($preMessage->hasToken(Token::S)) {
+//            return true;
+//        }
+//
+//        $turnToWrite = $initiator;
+//        foreach ($this->patterns as $pattern) {
+//            if ($turnToWrite && $pattern->hasToken(Token::S)) {
+//                return true;
+//            }
+//
+//            $turnToWrite = !$turnToWrite;
+//        }
+//
+//        return false;
+//    }
+//
+//    public function remoteRequired(bool $initiator): bool
+//    {
+//        $preMessage = $initiator
+//            ? $this->initiator
+//            : $this->responder;
+//
+//        return $preMessage->hasToken(Token::S);
+//    }
+
+    /**
+     * @return MessagePattern[]
+     */
+    public function messagePatterns(): array
+    {
+        return $this->patterns;
     }
 }

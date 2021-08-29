@@ -2,7 +2,9 @@
 
 namespace Invariance\NoiseProtocol\Exception;
 
-class DecryptFailureException extends \RuntimeException
+use RuntimeException;
+
+class DecryptFailureException extends RuntimeException
 {
 
 }

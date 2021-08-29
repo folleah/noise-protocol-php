@@ -2,7 +2,9 @@
 
 namespace Invariance\NoiseProtocol\Language;
 
-final class MessagePattern implements \Iterator
+use Iterator;
+
+final class MessagePattern implements Iterator
 {
     /**
      * @var string[]

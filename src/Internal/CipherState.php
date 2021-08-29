@@ -24,11 +24,6 @@ final class CipherState
         $this->n = 0;
     }
 
-    public function hasKey(): bool
-    {
-        return $this->k !== null;
-    }
-
     public function setNonce(int $nonce)
     {
         $this->n = $nonce;
@@ -44,6 +39,11 @@ final class CipherState
         }
 
         return $plainText;
+    }
+
+    public function hasKey(): bool
+    {
+        return $this->k !== null;
     }
 
     public function decryptWithAd(string $cipherText, string|null $ad = null): string

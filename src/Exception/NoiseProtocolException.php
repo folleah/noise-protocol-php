@@ -2,9 +2,9 @@
 
 namespace Invariance\NoiseProtocol\Exception;
 
-use Throwable;
+use Exception;
 
-class NoiseProtocolException extends \Exception
+class NoiseProtocolException extends Exception
 {
     public function __construct($message = "", ...$params)
     {

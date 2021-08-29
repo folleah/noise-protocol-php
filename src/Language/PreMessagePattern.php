@@ -2,7 +2,9 @@
 
 namespace Invariance\NoiseProtocol\Language;
 
-final class PreMessagePattern implements \Iterator
+use Iterator;
+
+final class PreMessagePattern implements Iterator
 {
     /**
      * @var string[]
@@ -10,6 +12,11 @@ final class PreMessagePattern implements \Iterator
     private array $tokens;
 
     private int $position = 0;
+
+    public function __construct(array $tokens = [])
+    {
+        $this->tokens = $tokens;
+    }
 
     public static function S(): self
     {
@@ -29,11 +36,6 @@ final class PreMessagePattern implements \Iterator
     public static function empty(): self
     {
         return new self();
-    }
-
-    public function __construct(array $tokens = [])
-    {
-        $this->tokens = $tokens;
     }
 
     public function hasToken(string $token): bool

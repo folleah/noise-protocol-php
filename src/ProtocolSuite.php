@@ -17,9 +17,10 @@ final class ProtocolSuite
 
     public function __construct(
         CipherFunction $cipherFunction,
-        HashFunction $hashFunction,
-        DhFunction $dhFunction
-    ) {
+        HashFunction   $hashFunction,
+        DhFunction     $dhFunction
+    )
+    {
         $this->cipherFunction = $cipherFunction;
         $this->hashFunction = $hashFunction;
         $this->dhFunction = $dhFunction;

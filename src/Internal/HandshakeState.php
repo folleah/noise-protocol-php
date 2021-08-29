@@ -10,6 +10,7 @@ use Invariance\NoiseProtocol\Language\Token;
 use Invariance\NoiseProtocol\ProtocolConfig;
 use Invariance\NoiseProtocol\ProtocolResponse;
 use Invariance\NoiseProtocol\ProtocolSuite;
+use SplQueue;
 
 final class HandshakeState
 {
@@ -24,9 +25,9 @@ final class HandshakeState
     private bool $initiator;
 
     /**
-     * @var \SplQueue|MessagePattern[]
+     * @var SplQueue|MessagePattern[]
      */
-    private array|\SplQueue $messagePatterns;
+    private array|SplQueue $messagePatterns;
 
     private ProtocolSuite $suite;
 
@@ -75,7 +76,7 @@ final class HandshakeState
 //        }
 
         $this->symmetricState->mixHash($config->getPrologue());
-        $this->messagePatterns = new \SplQueue();
+        $this->messagePatterns = new SplQueue();
 
         $this->initiator = $config->isInitiator();
         $this->s = $config->getS();
@@ -86,6 +87,45 @@ final class HandshakeState
         $this->processPreMessages($handshakePatternInstance);
         foreach ($handshakePatternInstance->messagePatterns() as $pattern) {
             $this->messagePatterns->enqueue($pattern);
+        }
+    }
+
+    private function processPreMessages(HandshakePattern $handshakePattern): void
+    {
+        foreach ($handshakePattern->initiator() as $token) {
+            if ($token === Token::E) {
+                $this->symmetricState->mixHash(
+                    $this->initiator
+                        ? $this->e->getPublicKey()
+                        : $this->re
+                );
+            }
+
+            if ($token === Token::S) {
+                $this->symmetricState->mixHash(
+                    $this->initiator
+                        ? $this->s->getPublicKey()
+                        : $this->rs
+                );
+            }
+        }
+
+        foreach ($handshakePattern->responder() as $token) {
+            if ($token === Token::E) {
+                $this->symmetricState->mixHash(
+                    $this->initiator
+                        ? $this->re
+                        : $this->e->getPublicKey()
+                );
+            }
+
+            if ($token === Token::S) {
+                $this->symmetricState->mixHash(
+                    $this->initiator
+                        ? $this->rs
+                        : $this->s->getPublicKey()
+                );
+            }
         }
     }
 
@@ -234,45 +274,6 @@ final class HandshakeState
             return new ProtocolResponse($payloadBuffer, $cStates[0], $cStates[1]);
         } else {
             return new ProtocolResponse($payloadBuffer);
-        }
-    }
-
-    private function processPreMessages(HandshakePattern $handshakePattern): void
-    {
-        foreach ($handshakePattern->initiator() as $token) {
-            if ($token === Token::E) {
-                $this->symmetricState->mixHash(
-                    $this->initiator
-                        ? $this->e->getPublicKey()
-                        : $this->re
-                );
-            }
-
-            if ($token === Token::S) {
-                $this->symmetricState->mixHash(
-                    $this->initiator
-                        ? $this->s->getPublicKey()
-                        : $this->rs
-                );
-            }
-        }
-
-        foreach ($handshakePattern->responder() as $token) {
-            if ($token === Token::E) {
-                $this->symmetricState->mixHash(
-                    $this->initiator
-                        ? $this->re
-                        : $this->e->getPublicKey()
-                );
-            }
-
-            if ($token === Token::S) {
-                $this->symmetricState->mixHash(
-                    $this->initiator
-                        ? $this->rs
-                        : $this->s->getPublicKey()
-                );
-            }
         }
     }
 }
