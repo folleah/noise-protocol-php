@@ -8,24 +8,18 @@ use Invariance\NoiseProtocol\ProtocolSuite;
 class SymmetricState
 {
     /**
-     * @var string - A chaining key of HASHLEN bytes
+     * A chaining key of HASHLEN bytes
      */
-    private $ck;
+    private string $ck;
 
     /**
-     * @var string - A hash output of HASHLEN bytes
+     * A hash output of HASHLEN bytes
      */
-    private $h;
+    private string $h;
 
-    /**
-     * @var CipherState
-     */
-    private $cipherState;
+    private CipherState $cipherState;
 
-    /**
-     * @var ProtocolSuite
-     */
-    private $suite;
+    private ProtocolSuite $suite;
 
     public function __construct(ProtocolSuite $suite, string $protocolName)
     {
@@ -49,12 +43,17 @@ class SymmetricState
 
     public function mixKey(string $inputKeyMaterial): void
     {
-        $this->ck = $tempK = HkdfWrapper::generate(
+        $tempK = null;
+        HkdfWrapper::generate(
             $this->ck,
             $inputKeyMaterial,
             2,
-            $this->suite->getHashFunction()->getHashLen(),
-            $this->suite->getDhFunction()->getLen()
+            $this->suite->getHashFunction(),
+            $this->suite->getDhFunction()->getLen(),
+            function ($out1, $out2) use (&$tempK) {
+                $this->ck = $out1;
+                $tempK = $out2;
+            }
         );
 
         if ($this->suite->getHashFunction()->getHashLen() === 64) {
@@ -71,12 +70,20 @@ class SymmetricState
 
     public function mixKeyAndHash(string $inputMaterialKey): void
     {
-        $this->ck = $tempH = $tempK = HkdfWrapper::generate(
+        $tempH = null;
+        $tempK = null;
+
+        HkdfWrapper::generate(
             $this->ck,
             $inputMaterialKey,
             3,
-            $this->suite->getHashFunction()->getHashLen(),
-            $this->suite->getDhFunction()->getLen()
+            $this->suite->getHashFunction(),
+            $this->suite->getDhFunction()->getLen(),
+            function ($out1, $out2, $out3) use (&$tempH, &$tempK) {
+                $this->ck = $out1;
+                $tempH = $out2;
+                $tempK = $out3;
+            }
         );
 
         $this->mixHash($tempH);
@@ -95,7 +102,7 @@ class SymmetricState
 
     public function encryptAndHash(string $plainText): string
     {
-        $cipherText = $this->cipherState->encryptWithAd($this->h, $plainText);
+        $cipherText = $this->cipherState->encryptWithAd($plainText, $this->h);
         $this->mixHash($cipherText);
 
         return $cipherText;
@@ -103,7 +110,7 @@ class SymmetricState
 
     public function decryptAndHash(string $cipherText): string
     {
-        $plainText = $this->cipherState->decryptWithAd($this->h, $cipherText);
+        $plainText = $this->cipherState->decryptWithAd($cipherText, $this->h);
         $this->mixHash($cipherText);
 
         return $plainText;
@@ -114,12 +121,19 @@ class SymmetricState
      */
     public function split(): array
     {
-        $tempK1 = $tempK2 = HkdfWrapper::generate(
+        $tempK1 = null;
+        $tempK2 = null;
+
+        HkdfWrapper::generate(
             $this->ck,
             '',
             2,
-            $this->suite->getHashFunction()->getHashLen(),
-            $this->suite->getDhFunction()->getLen()
+            $this->suite->getHashFunction(),
+            $this->suite->getDhFunction()->getLen(),
+            function ($out1, $out2) use (&$tempK1, &$tempK2) {
+                $tempK1 = $out1;
+                $tempK2 = $out2;
+            }
         );
 
         if ($this->suite->getHashFunction()->getHashLen() === 64) {

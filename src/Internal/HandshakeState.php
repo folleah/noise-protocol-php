@@ -8,6 +8,7 @@ use Invariance\NoiseProtocol\Language\HandshakePattern;
 use Invariance\NoiseProtocol\Language\MessagePattern;
 use Invariance\NoiseProtocol\Language\Token;
 use Invariance\NoiseProtocol\ProtocolConfig;
+use Invariance\NoiseProtocol\ProtocolResponse;
 use Invariance\NoiseProtocol\ProtocolSuite;
 
 class HandshakeState
@@ -110,12 +111,14 @@ class HandshakeState
     }
 
     /**
-     * @param string $message
-     * @param callable $output(string $messageBuffer, CipherState $c1, CipherState $c2)
      * @throws NoiseProtocolException
      */
-    public function writeMessage(string $message, callable $output): void
+    public function writeMessage(string|null $message): ProtocolResponse
     {
+        if ($message === null) {
+            $message = '';
+        }
+
         if ($this->messagePatterns->count() === 0) {
             throw new NoiseProtocolException('Cannot call writeMessage after the handshake has already been completed.');
         }
@@ -171,14 +174,21 @@ class HandshakeState
         // if message patterns end, return new cipher states
         if ($this->messagePatterns->count() === 0) {
             $cStates = $this->symmetricState->split();
-            $output($messageBuffer, $cStates[0], $cStates[1]);
+            return new ProtocolResponse($messageBuffer, $cStates[0], $cStates[1]);
         } else {
-            $output($messageBuffer, null, null);
+            return new ProtocolResponse($messageBuffer);
         }
     }
 
-    public function readMessage(string $message, callable $output): void
+    /**
+     * @throws NoiseProtocolException
+     */
+    public function readMessage(string|null $message): ProtocolResponse
     {
+        if ($message === null) {
+            $message = '';
+        }
+
         if ($this->messagePatterns->count() === 0) {
             throw new NoiseProtocolException('Cannot call readMessage after the handshake has already been completed.');
         }
@@ -242,9 +252,9 @@ class HandshakeState
         // if message patterns end, return new cipher states
         if ($this->messagePatterns->count() === 0) {
             $cStates = $this->symmetricState->split();
-            $output($payloadBuffer, $cStates[0], $cStates[1]);
+            return new ProtocolResponse($payloadBuffer, $cStates[0], $cStates[1]);
         } else {
-            $output($payloadBuffer, null, null);
+            return new ProtocolResponse($payloadBuffer);
         }
     }
 

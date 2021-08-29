@@ -20,6 +20,10 @@ class AesGcm implements CipherFunction
      */
     public function encrypt(string $k, int $n, string $ad, string $plainText): string
     {
+        if (strlen($k) !== SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES) {
+            throw new NoiseProtocolException('Key length must be %s bytes, %s bytes provided.', SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES, strlen($k));
+        }
+
         return sodium_crypto_aead_aes256gcm_encrypt(
             $plainText,
             $ad,

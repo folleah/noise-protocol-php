@@ -43,8 +43,11 @@ class CipherState
         $this->n = $nonce;
     }
 
-    public function encryptWithAd(string $ad, string $plainText): string
+    public function encryptWithAd(string $plainText, string|null $ad = null): string
     {
+        if ($ad === null) {
+            $ad = '';
+        }
         if ($this->hasKey()) {
             return $this->suite->getCipherFunction()->encrypt($this->k, $this->n++, $ad, $plainText);
         }
@@ -52,8 +55,11 @@ class CipherState
         return $plainText;
     }
 
-    public function decryptWithAd(string $ad, string $cipherText): string
+    public function decryptWithAd(string $cipherText, string|null $ad = null): string
     {
+        if ($ad === null) {
+            $ad = '';
+        }
         if ($this->hasKey()) {
             try {
                 return $this->suite->getCipherFunction()->decrypt($this->k, $this->n++, $ad, $cipherText);

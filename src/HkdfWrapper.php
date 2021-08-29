@@ -3,23 +3,21 @@
 namespace Invariance\NoiseProtocol;
 
 use Invariance\NoiseProtocol\Exception\NoiseProtocolException;
+use Invariance\NoiseProtocol\HashFunction\HashFunction;
 
 final class HkdfWrapper
 {
-    /**
-     * @param string $ck
-     * @param string $inputKeyMaterial
-     * @param int $numOutputs
-     * @param int $hashLen
-     * @param int $dhLen
-     *
-     * @return string - outputs
-     */
-    public static function generate(string $ck, string $inputKeyMaterial, int $numOutputs, int $hashLen, int $dhLen): string
-    {
+    public static function generate(
+        string $ck,
+        string $inputKeyMaterial,
+        int $numOutputs,
+        HashFunction $hashFunc,
+        int $dhLen,
+        callable $output
+    ): void {
         $ckLength = strlen($ck);
         assert(
-            $ckLength === $hashLen,
+            $ckLength === $hashFunc->getHashLen(),
             new NoiseProtocolException('Invalid ck length: %s.', $ckLength)
         );
 
@@ -30,21 +28,22 @@ final class HkdfWrapper
         );
 
         assert($numOutputs === 2 || $numOutputs === 3, new NoiseProtocolException('Invalid num outputs: %s', $numOutputs));
-//
-//        $tempKey = hash_hmac('sha256', $inputKeyMaterial, $ck, true);
-//        $output1 = hash_hmac('sha256', pack('s*', 0x01), $tempKey, true);
-//        $output2 = hash_hmac('sha256', $output1 . pack('s*', 0x02), $tempKey, true);
-//
-//        if ($numOutputs !== 3) {
-//            return [$output1, $output2];
-//        }
-//
-//        return [
-//            $output1,
-//            $output2,
-//            hash_hmac('sha256', $output2 | pack('s*', 0x03), $tempKey, true)
-//        ];
 
-        return hash_hkdf('sha256', $ck, $hashLen * $numOutputs, '', $inputKeyMaterial);
+//        var_dump(pack('s*', 0x01));die;
+//        var_dump(hash_hmac('sha256', 'test', 'test', true));die;
+
+        $tempKey = hash_hmac((string)$hashFunc, $inputKeyMaterial, $ck, true);
+        $out1 = hash_hmac((string)$hashFunc, pack('s', 0x01), $tempKey, true);
+        $out2 = hash_hmac((string)$hashFunc, $out1 . pack('s', 0x02), $tempKey, true);
+
+        if ($numOutputs === 2) {
+            $output($out1, $out2);
+            return;
+        }
+
+        $out3 = hash_hmac((string)$hashFunc, $out2 . pack('s', 0x03), $tempKey, true);
+        $output($out1, $out2, $out3);
+
+//        return hash_hkdf('sha256', $ck, $hashLen * $numOutputs, '', $inputKeyMaterial);
     }
 }
