@@ -1,4 +1,4 @@
-# NoiseProtocol PHP
+# [WIP] NoiseProtocol PHP
 PHP implementation of Noise Protocol. Uses PHP [Sodium](https://www.php.net/manual/ru/book.sodium.php) for Cipher\DH functions.
 
 # Links:
