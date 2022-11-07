@@ -7,4 +7,6 @@ PHP implementation of Noise Protocol. Uses PHP [Sodium](https://www.php.net/manu
 - [Example](example/example.php)
 
 # Installation:
-```coming soon```
+composer require folleah/noise-protocol-php
+
+
